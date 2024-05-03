@@ -17,77 +17,7 @@ import os
 logger = logging.getLogger(__name__)
 rec = Recorder(timeout=120)  # Setting a different timeout just as an example
 openAIApiKey = "";
-
-# Set up logging configuration
-# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# def record():
-#     logging.info('Recording started')
-#     fs = 44100  # Sample rate
-#     seconds = 5  # Duration of recording
-
-#     myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
-#     sd.wait()  # Wait until recording is finished
-#     logging.info('Recording finished')
-
-#     write('output.wav', fs, myrecording)  # Save as WAV file 
-#     logging.info('File written')
-#     return 'complete recording'
-
-def startRecordAsync():
-    return call_slow_function(rec.start_recording,())
-
-def stopRecordAsync():
-    return call_slow_function(rec.stop_recording,())
-
-
-def transcribe_audio(audio_file_path, output_file_path):
-    if not os.path.isfile(audio_file_path):
-        raise FileNotFoundError("The audio file does not exist.")
-    
-    url = "https://api.openai.com/v1/audio/transcriptions"
-    headers = {
-        "Authorization": f"Bearer {openAIApiKey}"
-    }
-    params = {
-        "model": "whisper-1",
-        "response_format": "text",
-        "language": "en"
-    }
-    files = {
-        "file": open(audio_file_path, "rb")
-    }
-    response = requests.post(url, headers=headers, files=files, data=params)
-    response.raise_for_status()
-    transcription = response.text
-    with open(output_file_path, "w") as file:
-        file.write(transcription)
-    return ['complete transcription', transcription]
-
-def transcribe_audioAsync():
-    return call_slow_function(transcribe_audio,("output.wav", "output.txt"))
-
-def chat_with_gpt():
-    # Read the content of the file
-    with open("output.txt", "r") as file:
-        content = file.read()
-
-    # API endpoint URL
-    url = "https://api.openai.com/v1/chat/completions"
-
-    # Request headers
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {openAIApiKey}",
-    }
-
-    # Request body
-    data = {
-        "model": "gpt-3.5-turbo",
-        "temperature": 0,
-        "max_tokens": 256,
-        "response_format": { "type": "json_object" },
-        "messages": [{"role": "system", "content": f"""Instructions:
+originalInstructions = """Instructions:
 ["vn_fnc","x-coordinates","y-coordinats","response","ammo_type"]
 "vn_fnc" can ONLY be one of these three: "vn_fnc_artillery_arc_light","vn_fnc_artillery_plane" and "vn_fnc_artillery_heli".
 The user will try and call a grid reference most of the time existing of 6 numbers. You need to split it into x-coordinates and y-coordinates.
@@ -157,6 +87,72 @@ USER: Need CAS at 753951
 "vn_fnc":"vn_fnc_artillery_plane","x-coordinates":"753","y-coordinates":"951","response":"Observer, Pilot Six. CAS mission in action. Keep your heads down and remain vigilant, over.","ammo_type":"vn_rocket_ffar_m151_he_x7"
 
 """
+instructions = originalInstructions
+
+# Set the default folder
+default_folder = 'DarkbelgMusesTemp'
+
+# Create the folder if it doesn't exist
+if not os.path.exists(default_folder):
+    os.makedirs(default_folder)
+
+# Change the current working directory
+os.chdir(default_folder)
+
+def startRecordAsync():
+    return call_slow_function(rec.start_recording,())
+
+def stopRecordAsync():
+    return call_slow_function(rec.stop_recording,())
+
+
+def transcribe_audio(audio_file_path, output_file_path):
+    if not os.path.isfile(audio_file_path):
+        raise FileNotFoundError("The audio file does not exist.")
+    
+    url = "https://api.openai.com/v1/audio/transcriptions"
+    headers = {
+        "Authorization": f"Bearer {openAIApiKey}"
+    }
+    params = {
+        "model": "whisper-1",
+        "response_format": "text",
+        "language": "en"
+    }
+    files = {
+        "file": open(audio_file_path, "rb")
+    }
+    response = requests.post(url, headers=headers, files=files, data=params)
+    response.raise_for_status()
+    transcription = response.text
+    with open(output_file_path, "w") as file:
+        file.write(transcription)
+    return ['complete transcription', transcription]
+
+def transcribe_audioAsync():
+    return call_slow_function(transcribe_audio,("output.wav", "output.txt"))
+
+def chat_with_gpt():
+    # Read the content of the file
+    with open("output.txt", "r") as file:
+        content = file.read()
+
+    # API endpoint URL
+    url = "https://api.openai.com/v1/chat/completions"
+
+    # Request headers
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {openAIApiKey}",
+    }
+
+    # Request body
+    data = {
+        "model": "gpt-3.5-turbo",
+        "temperature": 0,
+        "max_tokens": 256,
+        "response_format": { "type": "json_object" },
+        "messages": [{"role": "system", "content": instructions
         },
         {
             "role": "user", "content": content
@@ -244,6 +240,15 @@ def set_api_key(armaSettingopenAIApiKey):
     logger.info('openAI key: %s', armaSettingopenAIApiKey)
     openAIApiKey = armaSettingopenAIApiKey
     logger.info('openAI key: %s', openAIApiKey)
+
+def set_instructions(armaInstructions):
+    global instructions;
+    logger.info('set new instructions')
+    if armaInstructions == "":
+        instructions = originalInstructions;
+    else:
+        instructions = f"{armaInstructions}";
+
 
 has_call_finished  # noqa - this function has been imported from threading_utils.py
 get_call_value  # noqa - this function has been imported from threading_utils.py
