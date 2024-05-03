@@ -26,6 +26,16 @@ class CfgFunctions
 			class pipeline{};
 			class startRecording{};
 			class stopRecording{};
+			class setOpenAIKey{
+				postInit = 1;
+			};
+		};
+
+		class Settings {
+			file = "src\Functions\Settings";
+			class addSettings {
+				preInit = 1;
+			};
 		};
 	};
 };

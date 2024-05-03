@@ -16,6 +16,7 @@ import os
 # which should be `logging_example`, in case of this file
 logger = logging.getLogger(__name__)
 rec = Recorder(timeout=120)  # Setting a different timeout just as an example
+openAIApiKey = "";
 
 # Set up logging configuration
 # logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -46,7 +47,7 @@ def transcribe_audio(audio_file_path, output_file_path):
     
     url = "https://api.openai.com/v1/audio/transcriptions"
     headers = {
-        "Authorization": "Bearer ******"
+        "Authorization": f"Bearer {openAIApiKey}"
     }
     params = {
         "model": "whisper-1",
@@ -77,7 +78,7 @@ def chat_with_gpt():
     # Request headers
     headers = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ******"  # Replace with your OpenAI API key
+        "Authorization": f"Bearer {openAIApiKey}",
     }
 
     # Request body
@@ -199,7 +200,7 @@ def text_to_speech():
 
     url = "https://api.openai.com/v1/audio/speech"
     headers = {
-        "Authorization": "Bearer ******",
+        "Authorization": f"Bearer {openAIApiKey}",
         "Content-Type": "application/json"
     }
     data = {
@@ -237,7 +238,12 @@ def text_to_speech():
 
 def text_to_speechAsync():
     return call_slow_function(text_to_speech,())
-   
+
+def set_api_key(armaSettingopenAIApiKey):
+    global openAIApiKey
+    logger.info('openAI key: %s', armaSettingopenAIApiKey)
+    openAIApiKey = armaSettingopenAIApiKey
+    logger.info('openAI key: %s', openAIApiKey)
 
 has_call_finished  # noqa - this function has been imported from threading_utils.py
 get_call_value  # noqa - this function has been imported from threading_utils.py
