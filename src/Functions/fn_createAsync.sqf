@@ -35,6 +35,10 @@ if(str _response find "complete transcription" >= 0) then {
 };
 
 if(str _response find "complete communication chatGPT" >= 0) then {
+	if(not (isNil "callback_chat_gpt")) exitWith{
+		[_response] spawn callback_chat_gpt;
+	};
+
 	diag_log format ["Execute this: %1", _response];
 	systemChat format ["%1",_response#0];
 	he_fak sideChat format ["%1", _response#1];

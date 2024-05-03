@@ -21,11 +21,12 @@ class CfgFunctions
 		class Functions
 		{
             file = "src\Functions";
-			isRadioOn = false;
+			callback_chat_gpt = nill;
 			class createAsync{};
 			class pipeline{};
 			class startRecording{};
 			class stopRecording{};
+			class setCallback{};
 			class setOpenAIKey{
 				postInit = 1;
 			};
