@@ -6,7 +6,7 @@ class CfgPatches
 		author = "Darkbelg";
 
 		requiredVersion = 2.06;
-        requiredAddons[] = {"A3_Data_F_AoW_Loadorder", "A3_Data_F_Mod_Loadorder", "cba_common", "cba_events","cba_settings"};
+        requiredAddons[] = {"A3_Data_F_AoW_Loadorder", "A3_Data_F_Mod_Loadorder", "cba_common", "cba_events","cba_settings","PY3_Pythia"};
 		units[] = {};
 		weapons[] = {};
 
@@ -20,7 +20,7 @@ class CfgFunctions
 		tag= "DBMU";
 		class Functions
 		{
-            file = "src\Functions";
+            file = "darkbelgs_muses\Functions";
 			is_radio_on = false;
 			callback_chat_gpt = nill;
 			class createAsync{};
@@ -35,10 +35,15 @@ class CfgFunctions
 		};
 
 		class Settings {
-			file = "src\Functions\Settings";
+			file = "darkbelgs_muses\Functions\Settings";
 			class addSettings {
 				preInit = 1;
 			};
+		};
+
+		class Sound {
+			file = "darkbelgs_muses\Functions\Sound";
+			class playBeep {};
 		};
 	};
 };

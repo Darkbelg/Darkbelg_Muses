@@ -6,4 +6,7 @@ _scriptHandle = ["record.transcribe_audioAsync"] spawn DBMU_fnc_createAsync;
 waitUntil { scriptDone _scriptHandle };
 _scriptHandle = ["record.chat_with_gptAsync"] spawn DBMU_fnc_createAsync;
 waitUntil { scriptDone _scriptHandle };
+[] call DBMU_fnc_playBeep;
 _scriptHandle = ["record.text_to_speechAsync"] spawn DBMU_fnc_createAsync;
+waitUntil { scriptDone _scriptHandle };
+[] call DBMU_fnc_playBeep;
