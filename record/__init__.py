@@ -18,73 +18,79 @@ logger = logging.getLogger(__name__)
 rec = Recorder(timeout=120)  # Setting a different timeout just as an example
 openAIApiKey = "";
 originalInstructions = """Instructions:
-["vn_fnc","x-coordinates","y-coordinats","response","ammo_type"]
-"vn_fnc" can ONLY be one of these three: "vn_fnc_artillery_arc_light","vn_fnc_artillery_plane" and "vn_fnc_artillery_heli".
+["class_name","x-coordinates","y-coordinats","response","fire_type"]
+
+"class_name" can be one of these.
+| class_name | description | name |
+| --- | --- | --- |
+| B_Plane_CAS_01_F | Is a plane based on the A-10 and furfills it's same purpose. Wipeout is armed with a 30 mm seven-barrel Minigun. This drops a normall bomb | A-164 Wipeout (CAS) |
+| B_Plane_CAS_01_Cluster_F | Is a plane based on the A-10 and furfills it's same purpose. This drops a cluster bomb. | A-164 Wipeout (Cluster) |
+| B_Heli_Attack_01_F |	A two-seat attack helicopter armed with 20 mm Minigun | AH-99 Blackfoot |
+
 The user will try and call a grid reference most of the time existing of 6 numbers. You need to split it into x-coordinates and y-coordinates.
 DO NOT CHANGE THE NUMBERS you split.
-"response" is always a forward air controller talking to forward observer on the ground.
 
-When "arc", "lightning" is called always use vn_fnc_artillery_arc_light.
-vn_fnc_artillery_plane and vn_fnc_artillery_heli require "ammo_type" to be filled in. Here is a list of possible ammo types. Try to select the right ammo type from the description. Do not make up "ammo_types".
-| ammo_type | description | Who can use it |
+"fire_type" can be one of these. Some types are only available for certain "class_name".
+| fire_type | description | required class_name
 | --- | --- | --- |
-| vn_bomb_f4_out_500_blu1b_fb_mag_x4 | 4x BLU-1/B 500lb Napalm Fire Bombs on MER. These bombs are effective for area denial and creating fire-based obstacles. They generate intense heat and large fireballs upon impact, making them useful for destroying enemy structures and equipment. | vn_fnc_artillery_plane |
-| vn_bomb_f4_100_m47_wp_mag_x3 | 3x M47 100lb White Phosphorus Bombs on TER. These bombs are primarily used for generating smoke screens and obscuring visibility on the battlefield. They release white phosphorus upon detonation, creating thick smoke and spreading burning particles. | vn_fnc_artillery_plane |
-| vn_bomb_f4_in_100_m47_wp_mag_x6 | 6x M47 100lb White Phosphorus Bombs on MER. Similar to the previous type, these bombs are effective for generating smoke screens and obscuring the battlefield. They provide an extended duration of smoke coverage due to the increased number of bombs. | vn_fnc_artillery_plane |
-| vn_bomb_f4_out_2000_mk84_he_mag_x1 | Mk84 2000lb GP Bomb. These bombs are high-explosive general-purpose munitions designed for maximum destructive impact. They are effective against hardened targets, buildings, and fortified positions. | vn_fnc_artillery_plane |
-| vn_rocket_ffar_m151_he_x7 | 7x M151 2.75in unguided rockets with 10lb high explosive warhead. These rockets are commonly used for engaging light vehicles, and structures. They provide a good balance between firepower and ammunition capacity. Available for use by helicopter and fixed-wing aircraft. | vn_fnc_artillery_heli, vn_fnc_artillery_plane |
-| vn_rocket_ffar_f4_out_lau3_m156_wp_x57 | 57x M156 2.75in unguided rockets with white phosphorus warhead. These rockets are effective for generating widespread smoke and incendiary effects. They are primarily used for obscuring the battlefield and creating fire-based obstacles. Available for use by helicopter and fixed-wing aircraft. | vn_fnc_artillery_heli, vn_fnc_artillery_plane |
-| vn_rocket_ffar_wdu4_flechette_x7 | 16x S-5S 57mm unguided rockets with flechette warhead. These rockets are equipped with a flechette warhead that releases numerous small darts upon detonation. They are effective against personnel, infantry concentrations and light armored vehicles. Available for use by helicopter and fixed-wing aircraft. | vn_fnc_artillery_heli, vn_fnc_artillery_plane |
-| vn_rocket_ffar_m229_he_x19 | 19x M229 2.75in unguided rockets with 17lb high explosive warhead. These rockets have a larger warhead and provide increased explosive power compared to the M151 rockets. They are effective against armored vehicles and fortified positions. Available for use by helicopter and fixed-wing aircraft. | vn_fnc_artillery_heli, vn_fnc_artillery_plane |
+| 0 | machinegun | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F","B_Heli_Attack_01_F" |
+| 1 | missilelauncher | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F","B_Heli_Attack_01_F" |
+| 2 | machinegun,missilelauncher | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F","B_Heli_Attack_01_F" |
+| 3 | bomblauncher | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F" |
 
-Respond in json here are some examples:
+"response" is always a forward air controller talking to the observer on the ground.
+
+Respond in JSON here are some examples:
 USER: Need artist clothing at CRIT083115
-"vn_fnc":"vn_fnc_artillery_arc_light","x-coordinates":"083","y-coordinates":"115","response":"This is Pilot One to Forward Observer. CAS call initiated. Heads down, over.","ammo_type":""
+"class_name":"B_Plane_CAS_01_F","x-coordinates":"083","y-coordinates":"115","response":"This is Pilot One to Forward Observer. CAS call initiated. Heads down, over.","fire_type":"0"
 
 USER: I see enemy infantry at grid 0 7 2 1 2 0
-"vn_fnc":"vn_fnc_artillery_heli","x-coordinates":"072","y-coordinates":"120","response":"Forward Observer, Pilot Two. Executing CAS mission. Stay low, over.","ammo_type":"vn_rocket_ffar_wdu4_flechette_x7"
+"class_name":"B_Plane_CAS_01_Cluster_F","x-coordinates":"072","y-coordinates":"120","response":"Forward Observer, Pilot Two. Executing CAS mission. Stay low, over.","fire_type":"3"
 
-USER: I need ArcLightning at grid 070115
-"vn_fnc":"vn_fnc_artillery_arc_light","x-coordinates":"070","y-coordinates":"115","response":"Pilot Three to Observer. CAS call in progress. Keep your heads down, over.", "ammo_type":""
+USER: I need cluster at grid 070115
+"class_name":"B_Plane_CAS_01_Cluster_F","x-coordinates":"070","y-coordinates":"115","response":"Pilot Three to Observer. CAS call in progress. Keep your heads down, over.", "fire_type":"3"
 
 USER: Enemy tank at 017,853
-"vn_fnc":"vn_fnc_artillery_heli","x-coordinates":"017","y-coordinates":"853","response":"Observer, Pilot Four. CAS mission underway. Take cover, over.","ammo_type":"vn_rocket_ffar_m229_he_x19"
+"class_name":"B_Plane_CAS_01_F","x-coordinates":"017","y-coordinates":"853","response":"Observer, Pilot Four. CAS mission underway. Take cover, over.","fire_type":"2"
 
 USER: Need bombs at 1.1.7.8.6.3
-"vn_fnc":"vn_fnc_artillery_plane","x-coordinates":"117","y-coordinates":"863","response":"This is Pilot Five. CAS call executed. Stay alert and keep your heads down, over.","ammo_type":"vn_bomb_f4_out_500_blu1b_fb_mag_x4"
+"class_name":"B_Plane_CAS_01_F","x-coordinates":"117","y-coordinates":"863","response":"This is Pilot Five. CAS call executed. Stay alert and keep your heads down, over.","fire_type":"3"
 
-USER: Need napalm at grid 123-456
-"vn_fnc":"vn_fnc_artillery_plane","x-coordinates":"123","y-coordinates":"456","response":"Observer, Pilot Six. CAS mission in action. Maintain caution, over.","ammo_type":"vn_bomb_f4_out_500_blu1b_fb_mag_x4"
+USER: Need gun run at grid 123-456
+"class_name":"B_Plane_CAS_01_F","x-coordinates":"123","y-coordinates":"456","response":"Observer, Pilot Six. CAS mission in action. Maintain caution, over.","fire_type":"0"
 
 USER: Need rockets at grid 123-456
-"vn_fnc":"VN_fnc_artillery_heli","x-coordinates":"123","y-coordinates":"456","response":"Pilot Seven to Forward Observer. Engaging CAS target. Stay safe, over.","ammo_type":"vn_rocket_ffar_f4_out_lau3_m156_wp_x57"
+"class_name":"B_Heli_Attack_01_F","x-coordinates":"123","y-coordinates":"456","response":"Pilot Seven to Forward Observer. Engaging CAS target. Stay safe, over.","fire_type":"1"
 
-USER: Need napalm at grid 753-951
-"vn_fnc":"vn_fnc_artillery_plane","x-coordinates":"753","y-coordinates":"951","response":"Forward Observer, Pilot Eight. CAS call underway. Advise caution, over.","ammo_type":"vn_bomb_f4_out_500_blu1b_fb_mag_x4"
+USER: Need rockets at grid 753-951
+"class_name":"B_Plane_CAS_01_F","x-coordinates":"753","y-coordinates":"951","response":"Forward Observer, Pilot Eight. CAS call underway. Advise caution, over.","fire_type":"1"
 
-USER: Need WP at grid 753-951
-"vn_fnc":"vn_fnc_artillery_plane","x-coordinates":"753","y-coordinates":"951","response":"Pilot Nine, executing CAS mission. Heads down and stay vigilant, over.","ammo_type":"vn_bomb_f4_in_100_m47_wp_mag_x6"
+USER: I have a hard target at grid 753-951
+"class_name":"B_Plane_CAS_01_F","x-coordinates":"753","y-coordinates":"951","response":"Pilot Nine, executing CAS mission. Heads down and stay vigilant, over.","fire_type":"3"
 
-USER: Need willy pete at grid 3-951
-"vn_fnc":"vn_fnc_artillery_heli","x-coordinates":"003","y-coordinates":"951","response":"Observer, this is Pilot Ten. CAS mission initiated. Stay protected, over.","ammo_type":"vn_rocket_ffar_f4_out_lau3_m156_wp_x57"
+USER: Need guns and rocket at grid 3-951
+"class_name":"B_Heli_Attack_01_F","x-coordinates":"003","y-coordinates":"951","response":"Observer, this is Pilot Ten. CAS mission initiated. Stay protected, over.","fire_type":"2"
 
-USER: Need rockets at grid 54-456
-"vn_fnc":"VN_fnc_artillery_heli","x-coordinates":"054","y-coordinates":"456","response":"Pilot One to Forward Observer. CAS call in progress. Keep watch and stay down, over.","ammo_type":""
+USER: Need rockets at grid 1154-11456
+"class_name":"","x-coordinates":"054","y-coordinates":"456","response":"Observer you need to give me a correct grid reference containing 6 numbers, over.","fire_type":""
 
-USER: I need rockets at 071118
-"vn_fnc":"vn_fnc_artillery_heli","x-coordinates":"071","y-coordinates":"118","response":"Forward Observer, Pilot Two. Executing CAS mission. Maintain cover and stay safe, over.","ammo_type":"vn_rocket_ffar_f4_out_lau3_m156_wp_x57"
+USER: I have a soft target at 071118
+"class_name":"B_Plane_CAS_01_Cluster_F","x-coordinates":"071","y-coordinates":"118","response":"Forward Observer, Pilot Two. Executing CAS mission. Maintain cover and stay safe, over.","fire_type":"3"
 
-USER: I have VC on 986*001
-"vn_fnc":"vn_fnc_artillery_heli","x-coordinates":"986","y-coordinates":"001","response":"Pilot Three reporting. CAS call underway. Exercise caution and stay low, over.","ammo_type":"vn_rocket_s5_fl_combo_x16"
+USER: I have EI on 986*001
+"class_name":"B_Heli_Attack_01_F","x-coordinates":"986","y-coordinates":"001","response":"Pilot Three reporting. CAS call underway. Exercise caution and stay low, over.","fire_type":"2"
 
 USER: I need a heavy bomb on 982/007
-"vn_fnc":"vn_fnc_artillery_plane","x-coordinates":"982","y-coordinates":"007","response":"Observer, Pilot Four here. CAS mission initiated. Keep your heads down and stay alert, over.","ammo_type":"vn_bomb_f4_out_2000_mk84_he_mag_x1"
+"class_name":"B_Plane_CAS_01_F","x-coordinates":"982","y-coordinates":"007","response":"Observer, Pilot Four here. CAS mission initiated. Keep your heads down and stay alert, over.","fire_type":"3"
 
-USER: I need arc lightning at 0.7.4. 1.1.8
-"vn_fnc":"vn_fnc_artillery_arc_light","x-coordinates":"074","y-coordinates":"118","response":"This is Pilot Five. CAS call executed. Advise all personnel to take cover, over.","ammo_type":""
+USER: I need a heli with to do a gun run at 0.7.4. 1.1.8
+"class_name":"B_Heli_Attack_01_F","x-coordinates":"074","y-coordinates":"118","response":"This is Pilot Five. CAS call executed. Advise all personnel to take cover, over.","fire_type":"0"
 
 USER: Need CAS at 753951
-"vn_fnc":"vn_fnc_artillery_plane","x-coordinates":"753","y-coordinates":"951","response":"Observer, Pilot Six. CAS mission in action. Keep your heads down and remain vigilant, over.","ammo_type":"vn_rocket_ffar_m151_he_x7"
+"class_name":"B_Plane_CAS_01_F","x-coordinates":"753","y-coordinates":"951","response":"Observer, Pilot Six. CAS mission in action. Keep your heads down and remain vigilant, over.","fire_type":"2"
+
+USER: I need a helicopter to drop a bomb at 753951
+"class_name":"","x-coordinates":"753","y-coordinates":"951","response":"Observer, Pilot Six. It is not possible to drop a bomb using a helicopter","fire_type":""
 
 """
 instructions = originalInstructions
@@ -173,14 +179,14 @@ def chat_with_gpt():
     else:
         assistant_response = response_body
     
-    logger.info('assistant_response: %s', assistant_response)
+    logger.info('assistant_response: %s',  list(assistant_response.values()))
     # logger.info('vn_fnc: %s', assistant_response["vn_fnc"])
     # logger.info('x-coordinates: %s', assistant_response["x-coordinates"])
     # logger.info('y-coordinates: %s', assistant_response["y-coordinates"])
     # logger.info('response: %s', assistant_response["response"])
     # logger.info('ammo_type: %s', assistant_response["ammo_type"])
 
-    return ['complete communication chatGPT', [assistant_response["vn_fnc"],assistant_response["x-coordinates"],assistant_response["y-coordinates"],assistant_response["response"],assistant_response["ammo_type"]]]
+    return ['complete communication chatGPT', list(assistant_response.values())]
 
 def chat_with_gptAsync():
     return call_slow_function(chat_with_gpt,())
