@@ -32,6 +32,7 @@ class CfgFunctions
 			class setOpenAIKey{
 				postInit = 1;
 			};
+			class toggleMicIcon{};
 		};
 
 		class Settings {
@@ -69,3 +70,4 @@ class UserActionGroups
 		group[] = {"DBMU_TalkAction"}; // List of all actions inside this category.
 	};
 };
+
