@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 rec = Recorder(timeout=120)  # Setting a different timeout just as an example
 openAIApiKey = "";
 originalInstructions = """Instructions:
-["class_name","x-coordinates","y-coordinats","response","fire_type"]
+["response","class_name","x-coordinates","y-coordinats","fire_type"]
+
+"response" is always a forward air controller talking to the observer on the ground.
 
 "class_name" can be one of these.
 | class_name | description | name |
@@ -38,59 +40,57 @@ DO NOT CHANGE THE NUMBERS you split.
 | 2 | machinegun,missilelauncher | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F","B_Heli_Attack_01_F" |
 | 3 | bomblauncher | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F" |
 
-"response" is always a forward air controller talking to the observer on the ground.
-
 Respond in JSON here are some examples:
 USER: Need artist clothing at CRIT083115
-"class_name":"B_Plane_CAS_01_F","x-coordinates":"083","y-coordinates":"115","response":"This is Pilot One to Forward Observer. CAS call initiated. Heads down, over.","fire_type":"0"
+"response":"This is Pilot One to Forward Observer. CAS call initiated. Heads down, over.","class_name":"B_Plane_CAS_01_F","x-coordinates":"083","y-coordinates":"115","fire_type":"0"
 
 USER: I see enemy infantry at grid 0 7 2 1 2 0
-"class_name":"B_Plane_CAS_01_Cluster_F","x-coordinates":"072","y-coordinates":"120","response":"Forward Observer, Pilot Two. Executing CAS mission. Stay low, over.","fire_type":"3"
+"response":"Forward Observer, Pilot Two. Executing CAS mission. Stay low, over.","class_name":"B_Plane_CAS_01_Cluster_F","x-coordinates":"072","y-coordinates":"120","fire_type":"3"
 
 USER: I need cluster at grid 070115
-"class_name":"B_Plane_CAS_01_Cluster_F","x-coordinates":"070","y-coordinates":"115","response":"Pilot Three to Observer. CAS call in progress. Keep your heads down, over.", "fire_type":"3"
+"response":"Pilot Three to Observer. CAS call in progress. Keep your heads down, over.","class_name":"B_Plane_CAS_01_Cluster_F","x-coordinates":"070","y-coordinates":"115", "fire_type":"3"
 
 USER: Enemy tank at 017,853
-"class_name":"B_Plane_CAS_01_F","x-coordinates":"017","y-coordinates":"853","response":"Observer, Pilot Four. CAS mission underway. Take cover, over.","fire_type":"2"
+"response":"Observer, Pilot Four. CAS mission underway. Take cover, over.","class_name":"B_Plane_CAS_01_F","x-coordinates":"017","y-coordinates":"853","fire_type":"2"
 
 USER: Need bombs at 1.1.7.8.6.3
-"class_name":"B_Plane_CAS_01_F","x-coordinates":"117","y-coordinates":"863","response":"This is Pilot Five. CAS call executed. Stay alert and keep your heads down, over.","fire_type":"3"
+"response":"This is Pilot Five. CAS call executed. Stay alert and keep your heads down, over.","class_name":"B_Plane_CAS_01_F","x-coordinates":"117","y-coordinates":"863","fire_type":"3"
 
 USER: Need gun run at grid 123-456
-"class_name":"B_Plane_CAS_01_F","x-coordinates":"123","y-coordinates":"456","response":"Observer, Pilot Six. CAS mission in action. Maintain caution, over.","fire_type":"0"
+"response":"Observer, Pilot Six. CAS mission in action. Maintain caution, over.","class_name":"B_Plane_CAS_01_F","x-coordinates":"123","y-coordinates":"456","fire_type":"0"
 
 USER: Need rockets at grid 123-456
-"class_name":"B_Heli_Attack_01_F","x-coordinates":"123","y-coordinates":"456","response":"Pilot Seven to Forward Observer. Engaging CAS target. Stay safe, over.","fire_type":"1"
+"response":"Pilot Seven to Forward Observer. Engaging CAS target. Stay safe, over.","class_name":"B_Heli_Attack_01_F","x-coordinates":"123","y-coordinates":"456","fire_type":"1"
 
 USER: Need rockets at grid 753-951
-"class_name":"B_Plane_CAS_01_F","x-coordinates":"753","y-coordinates":"951","response":"Forward Observer, Pilot Eight. CAS call underway. Advise caution, over.","fire_type":"1"
+"response":"Forward Observer, Pilot Eight. CAS call underway. Advise caution, over.","class_name":"B_Plane_CAS_01_F","x-coordinates":"753","y-coordinates":"951","fire_type":"1"
 
 USER: I have a hard target at grid 753-951
-"class_name":"B_Plane_CAS_01_F","x-coordinates":"753","y-coordinates":"951","response":"Pilot Nine, executing CAS mission. Heads down and stay vigilant, over.","fire_type":"3"
+"response":"Pilot Nine, executing CAS mission. Heads down and stay vigilant, over.","class_name":"B_Plane_CAS_01_F","x-coordinates":"753","y-coordinates":"951","fire_type":"3"
 
 USER: Need guns and rocket at grid 3-951
-"class_name":"B_Heli_Attack_01_F","x-coordinates":"003","y-coordinates":"951","response":"Observer, this is Pilot Ten. CAS mission initiated. Stay protected, over.","fire_type":"2"
+"response":"Observer, this is Pilot Ten. CAS mission initiated. Stay protected, over.","class_name":"B_Heli_Attack_01_F","x-coordinates":"003","y-coordinates":"951","fire_type":"2"
 
 USER: Need rockets at grid 1154-11456
-"class_name":"","x-coordinates":"054","y-coordinates":"456","response":"Observer you need to give me a correct grid reference containing 6 numbers, over.","fire_type":""
+"response":"Observer you need to give me a correct grid reference containing 6 numbers, over.","class_name":"","x-coordinates":"054","y-coordinates":"456","fire_type":""
 
 USER: I have a soft target at 071118
-"class_name":"B_Plane_CAS_01_Cluster_F","x-coordinates":"071","y-coordinates":"118","response":"Forward Observer, Pilot Two. Executing CAS mission. Maintain cover and stay safe, over.","fire_type":"3"
+"response":"Forward Observer, Pilot Two. Executing CAS mission. Maintain cover and stay safe, over.","class_name":"B_Plane_CAS_01_Cluster_F","x-coordinates":"071","y-coordinates":"118","fire_type":"3"
 
 USER: I have EI on 986*001
-"class_name":"B_Heli_Attack_01_F","x-coordinates":"986","y-coordinates":"001","response":"Pilot Three reporting. CAS call underway. Exercise caution and stay low, over.","fire_type":"2"
+"response":"Pilot Three reporting. CAS call underway. Exercise caution and stay low, over.","class_name":"B_Heli_Attack_01_F","x-coordinates":"986","y-coordinates":"001","fire_type":"2"
 
 USER: I need a heavy bomb on 982/007
-"class_name":"B_Plane_CAS_01_F","x-coordinates":"982","y-coordinates":"007","response":"Observer, Pilot Four here. CAS mission initiated. Keep your heads down and stay alert, over.","fire_type":"3"
+"response":"Observer, Pilot Four here. CAS mission initiated. Keep your heads down and stay alert, over.","class_name":"B_Plane_CAS_01_F","x-coordinates":"982","y-coordinates":"007","fire_type":"3"
 
 USER: I need a heli with to do a gun run at 0.7.4. 1.1.8
-"class_name":"B_Heli_Attack_01_F","x-coordinates":"074","y-coordinates":"118","response":"This is Pilot Five. CAS call executed. Advise all personnel to take cover, over.","fire_type":"0"
+"response":"This is Pilot Five. CAS call executed. Advise all personnel to take cover, over.","class_name":"B_Heli_Attack_01_F","x-coordinates":"074","y-coordinates":"118","fire_type":"0"
 
 USER: Need CAS at 753951
-"class_name":"B_Plane_CAS_01_F","x-coordinates":"753","y-coordinates":"951","response":"Observer, Pilot Six. CAS mission in action. Keep your heads down and remain vigilant, over.","fire_type":"2"
+"response":"Observer, Pilot Six. CAS mission in action. Keep your heads down and remain vigilant, over.","class_name":"B_Plane_CAS_01_F","x-coordinates":"753","y-coordinates":"951","fire_type":"2"
 
 USER: I need a helicopter to drop a bomb at 753951
-"class_name":"","x-coordinates":"753","y-coordinates":"951","response":"Observer, Pilot Six. It is not possible to drop a bomb using a helicopter","fire_type":""
+"response":"Observer, Pilot Six. It is not possible to drop a bomb using a helicopter","class_name":"","x-coordinates":"753","y-coordinates":"951","fire_type":""
 
 """
 instructions = originalInstructions

@@ -45,11 +45,11 @@ if(str _response find "complete communication chatGPT" >= 0) then {
 
 	// _coordinatesArr = parseSimpleArray (_response#1);
 	_coordinatesArr = _response#1;
-	// systemChat format ["call: %1", _coordinatesArr#0];
-	// systemChat format ["X: %1", _coordinatesArr#1];
-	// systemChat format ["Y: %1", _coordinatesArr#2];
-	_xCoordinate = ((parseNumber(_coordinatesArr#1)) * 100);
-	_yCoordinate = ((parseNumber(_coordinatesArr#2)) * 100);
+	// systemChat format ["call: %1", _coordinatesArr#1];
+	// systemChat format ["X: %1", _coordinatesArr#2];
+	// systemChat format ["Y: %1", _coordinatesArr#3];
+	_xCoordinate = ((parseNumber(_coordinatesArr#2)) * 100);
+	_yCoordinate = ((parseNumber(_coordinatesArr#3)) * 100);
 	_myNearestEnemy = player findNearestEnemy [_xCoordinate, _yCoordinate];
 	_nearestEnemyPosition = [_xCoordinate, _yCoordinate,0];
 
@@ -62,7 +62,7 @@ if(str _response find "complete communication chatGPT" >= 0) then {
 	diag_log format ["_nearestEnemyPosition:%1", _nearestEnemyPosition];
 
 	if((str (_coordinatesArr)) find "B_Plane_CAS_01_F" > -1) then {
-		he_fak sideChat format ["%1", _coordinatesArr#3];
+		he_fak sideChat format ["%1", _coordinatesArr#0];
 		_initArguments = format ["
 			this setVariable ['BIS_fnc_initModules_disableAutoActivation', false, true];
 			this setVariable ['vehicle','B_Plane_CAS_01_F'];
@@ -77,7 +77,7 @@ if(str _response find "complete communication chatGPT" >= 0) then {
 	};
 
 	if((str (_coordinatesArr)) find "B_Plane_CAS_01_Cluster_F" > -1) then {
-		he_fak sideChat format ["%1", _coordinatesArr#3];
+		he_fak sideChat format ["%1", _coordinatesArr#0];
 		_initArguments = format ["
 			this setVariable ['BIS_fnc_initModules_disableAutoActivation', false, true];
 			this setVariable ['vehicle','B_Plane_CAS_01_Cluster_F'];
@@ -92,7 +92,7 @@ if(str _response find "complete communication chatGPT" >= 0) then {
 	};
 
 	if((str (_coordinatesArr)) find "B_Heli_Attack_01_F" > -1) then {
-		he_fak sideChat format ["%1", _coordinatesArr#3];
+		he_fak sideChat format ["%1", _coordinatesArr#0];
 		_initArguments = format ["
 			this setVariable ['BIS_fnc_initModules_disableAutoActivation', false, true];
 			this setVariable ['vehicle','B_Heli_Attack_01_dynamicLoadout_F'];
@@ -106,8 +106,8 @@ if(str _response find "complete communication chatGPT" >= 0) then {
 		];
 	};
 
-	if(_coordinatesArr#0 == "" || _coordinatesArr#4 == "") then {
-		he_fak sideChat format ["%1", _coordinatesArr#3];
+	if(_coordinatesArr#1 == "" || _coordinatesArr#0 == "") then {
+		he_fak sideChat format ["%1", _coordinatesArr#0];
 	}
 
 };
