@@ -15,7 +15,7 @@ _picCtrl ctrlSetText "A3\ui_f\data\igui\rscingameui\rscdisplayvoicechat\micropho
 _picCtrl ctrlSetPosition [safezoneX + 0.25 * safeZoneW, safezoneY + 0.75 * safeZoneH, 0.04, 0.04];
 _picCtrl ctrlCommit 0;
 
-waitUntil {is_radio_on == false};
+waitUntil {DBMU_is_radio_on == false};
 
 ctrlDelete _picCtrl;
 

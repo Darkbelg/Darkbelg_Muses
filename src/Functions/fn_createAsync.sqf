@@ -35,8 +35,8 @@ if(str _response find "complete transcription" >= 0) then {
 };
 
 if(str _response find "complete communication chatGPT" >= 0) then {
-	if(not (isNil "callback_chat_gpt")) exitWith{
-		[_response] spawn callback_chat_gpt;
+	if(not (isNil "DBMU_callback_chat_gpt")) exitWith{
+		[_response] spawn DBMU_callback_chat_gpt;
 	};
 
 	diag_log format ["Execute this: %1", _response];
@@ -106,9 +106,73 @@ if(str _response find "complete communication chatGPT" >= 0) then {
 		];
 	};
 
+	
+	if((str (_coordinatesArr)) find "B_Plane_Fighter_01_F" > -1) then {
+		he_fak sideChat format ["%1", _coordinatesArr#0];
+		_initArguments = format ["
+			this setVariable ['BIS_fnc_initModules_disableAutoActivation', false, true];
+			this setVariable ['vehicle','B_Plane_Fighter_01_F'];
+			this setVariable ['type',%1];
+		",parseNumber  (_coordinatesArr#4)];
+		private _moduleGroup = createGroup sideLogic; 
+		"ModuleCAS_F" createUnit [ 
+		_nearestEnemyPosition, 
+		_moduleGroup, 
+		_initArguments
+		];
+	};
+
+	if((str (_coordinatesArr)) find "B_Plane_Fighter_01_Stealth_F" > -1) then {
+		he_fak sideChat format ["%1", _coordinatesArr#0];
+		_initArguments = format ["
+			this setVariable ['BIS_fnc_initModules_disableAutoActivation', false, true];
+			this setVariable ['vehicle','B_Plane_Fighter_01_Stealth_F'];
+			this setVariable ['type',%1];
+		",parseNumber  (_coordinatesArr#4)];
+		private _moduleGroup = createGroup sideLogic; 
+		"ModuleCAS_F" createUnit [ 
+		_nearestEnemyPosition, 
+		_moduleGroup, 
+		_initArguments
+		];
+	};
+
+	if((str (_coordinatesArr)) find "B_Plane_Fighter_01_Cluster_F" > -1) then {
+		he_fak sideChat format ["%1", _coordinatesArr#0];
+		_initArguments = format ["
+			this setVariable ['BIS_fnc_initModules_disableAutoActivation', false, true];
+			this setVariable ['vehicle','B_Plane_Fighter_01_Cluster_F'];
+			this setVariable ['type',%1];
+		", parseNumber (_coordinatesArr#4)];
+		private _moduleGroup = createGroup sideLogic; 
+		"ModuleCAS_F" createUnit [ 
+		_nearestEnemyPosition, 
+		_moduleGroup, 
+		_initArguments
+		];
+	};
+
+	if((str (_coordinatesArr)) find "B_UAV_05_F" > -1) then {
+		he_fak sideChat format ["%1", _coordinatesArr#0];
+		_initArguments = format ["
+			this setVariable ['BIS_fnc_initModules_disableAutoActivation', false, true];
+			this setVariable ['vehicle','B_UAV_05_F'];
+			this setVariable ['type',%1];
+		", parseNumber (_coordinatesArr#4)];
+		private _moduleGroup = createGroup sideLogic; 
+		"ModuleCAS_F" createUnit [ 
+		_nearestEnemyPosition, 
+		_moduleGroup, 
+		_initArguments
+		];
+	};
+
 	if(_coordinatesArr#1 == "" || _coordinatesArr#0 == "") then {
 		he_fak sideChat format ["%1", _coordinatesArr#0];
 	}
 
 };
 
+if(str _response find "complete text to speech" >= 0) then {
+
+}

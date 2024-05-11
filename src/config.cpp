@@ -7,7 +7,9 @@ class CfgPatches
 
 		requiredVersion = 2.06;
         requiredAddons[] = {"A3_Data_F_AoW_Loadorder", "A3_Data_F_Mod_Loadorder", "cba_common", "cba_events","cba_settings","PY3_Pythia"};
-		units[] = {};
+		units[] = {
+			"Sound_HelicopterBackgroundSoundVehicle",
+		};
 		weapons[] = {};
 
 	};
@@ -21,18 +23,22 @@ class CfgFunctions
 		class Functions
 		{
             file = "darkbelgs_muses\Functions";
-			is_radio_on = false;
-			callback_chat_gpt = nill;
 			class createAsync{};
 			class pipeline{};
 			class startRecording{};
 			class stopRecording{};
 			class setInstructions{};
 			class setCallback{};
-			class setOpenAIKey{
+			class showBattleyeWarning{
 				postInit = 1;
 			};
+			class setOpenAIKey{
+				// postInit = 1;
+			};
 			class toggleMicIcon{};
+			class init{
+				preInit = 1
+			};
 		};
 
 		class Settings {
@@ -45,6 +51,7 @@ class CfgFunctions
 		class Sound {
 			file = "darkbelgs_muses\Functions\Sound";
 			class playBeep {};
+			class backgroundHelicopter{};	
 		};
 	};
 };
@@ -68,6 +75,33 @@ class UserActionGroups
 		name = "Darkbelgs Muses"; // Display name of your category.
 		isAddon = 1;
 		group[] = {"DBMU_TalkAction"}; // List of all actions inside this category.
+	};
+};
+
+class CfgVehicles
+{
+	class Sound;
+	class Sound_HelicopterBackgroundSoundVehicle: Sound
+	{
+		sound="HelicopterBackgroundSounds";
+		_generalMacro="Sound_HelicopterBackgroundSoundVehicle";
+		scope=2;
+		displayName="Helicopter background noise";
+	};
+};
+
+class CfgSFX
+{
+	access=1;
+	class HelicopterBackgroundSounds
+	{
+		sounds[] = { "helicopter1", "helicopter2", "helicopter3", "helicopter4", "helicopter5" };
+		helicopter1[] = { "\darkbelgs_muses\Functions\Sound\Media\helicopter1.ogg", db-10, 1.0, 1000, 0.2, 0, 0, 0 };
+		helicopter2[] = { "\darkbelgs_muses\Functions\Sound\Media\helicopter2.ogg", db-10, 1.0, 1000, 0.2, 0, 0, 0 };
+		helicopter3[] = { "\darkbelgs_muses\Functions\Sound\Media\helicopter3.ogg", db-10, 1.0, 1000, 0.2, 0, 0, 0 };
+		helicopter4[] = { "\darkbelgs_muses\Functions\Sound\Media\helicopter4.ogg", db-10, 1.0, 1000, 0.2, 0, 0, 0 };
+		helicopter5[] = { "\darkbelgs_muses\Functions\Sound\Media\helicopter5.ogg", db-10, 1.0, 1000, 0.2, 0, 0, 0 };
+		empty[] = { "", 0, 0, 0, 0, 0, 0, 0 };
 	};
 };
 

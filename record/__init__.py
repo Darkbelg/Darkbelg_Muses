@@ -25,9 +25,13 @@ originalInstructions = """Instructions:
 "class_name" can be one of these.
 | class_name | description | name |
 | --- | --- | --- |
-| B_Plane_CAS_01_F | Is a plane based on the A-10 and furfills it's same purpose. Wipeout is armed with a 30 mm seven-barrel Minigun. This drops a normall bomb | A-164 Wipeout (CAS) |
+| B_Plane_CAS_01_F | Is a plane based on the A-10 and furfills it's same purpose. Wipeout is armed with a 30 mm seven-barrel Minigun. This drops a normal bomb | A-164 Wipeout (CAS) |
 | B_Plane_CAS_01_Cluster_F | Is a plane based on the A-10 and furfills it's same purpose. This drops a cluster bomb. | A-164 Wipeout (Cluster) |
-| B_Heli_Attack_01_F |	A two-seat attack helicopter armed with 20 mm Minigun | AH-99 Blackfoot |
+| B_Heli_Attack_01_F |	A two-seat attack helicopter armed with 20 mm Minigun and rockets. Can't drop bombs. | AH-99 Blackfoot |
+| B_Plane_Fighter_01_F | Is a jet fighter. It's fater then the wipeout. Armed with a M61 Minigun 20 mm. This drops a nomal bomb. | F/A-181 Black Wasp II |
+| B_Plane_Fighter_01_Stealth_F | Is a jet fighter. This is the stealth version. It's fater then the wipeout. Armed with a M61 Minigun 20 mm. This drops a normal bomb. | F/A-181 Black Wasp II (Stealth) |
+| B_Plane_Fighter_01_Cluster_F | Is a jet fighter. It's fater then the wipeout. Armed with a M61 Minigun 20 mm. This drops a cluster bomb. | F/A-181 Black Wasp II (Cluster) |
+| B_UAV_05_F | Is a drone jet. It's fater then the wipeout. It is stealthy because of it's small footprint. This drops a normal bomb. Has no guns or missles. | F/A-181 Black Wasp II (Cluster) |
 
 The user will try and call a grid reference most of the time existing of 6 numbers. You need to split it into x-coordinates and y-coordinates.
 DO NOT CHANGE THE NUMBERS you split.
@@ -35,10 +39,10 @@ DO NOT CHANGE THE NUMBERS you split.
 "fire_type" can be one of these. Some types are only available for certain "class_name".
 | fire_type | description | required class_name
 | --- | --- | --- |
-| 0 | machinegun | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F","B_Heli_Attack_01_F" |
-| 1 | missilelauncher | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F","B_Heli_Attack_01_F" |
-| 2 | machinegun,missilelauncher | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F","B_Heli_Attack_01_F" |
-| 3 | bomblauncher | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F" |
+| 0 | machinegun | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F","B_Heli_Attack_01_F","B_Plane_Fighter_01_F","B_Plane_Fighter_01_Stealth_F","B_Plane_Fighter_01_Cluster_F" |
+| 1 | missilelauncher | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F","B_Heli_Attack_01_F","B_Plane_Fighter_01_F","B_Plane_Fighter_01_Stealth_F","B_Plane_Fighter_01_Cluster_F" |
+| 2 | machinegun,missilelauncher | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F","B_Heli_Attack_01_F","B_Plane_Fighter_01_F","B_Plane_Fighter_01_Stealth_F","B_Plane_Fighter_01_Cluster_F" |
+| 3 | bomblauncher | "B_Plane_CAS_01_F","B_Plane_CAS_01_Cluster_F","B_Plane_Fighter_01_F","B_Plane_Fighter_01_Stealth_F","B_Plane_Fighter_01_Cluster_F","B_UAV_05_F" |
 
 Respond in JSON here are some examples:
 USER: Need artist clothing at CRIT083115
@@ -87,10 +91,13 @@ USER: I need a heli with to do a gun run at 0.7.4. 1.1.8
 "response":"This is Pilot Five. CAS call executed. Advise all personnel to take cover, over.","class_name":"B_Heli_Attack_01_F","x-coordinates":"074","y-coordinates":"118","fire_type":"0"
 
 USER: Need CAS at 753951
-"response":"Observer, Pilot Six. CAS mission in action. Keep your heads down and remain vigilant, over.","class_name":"B_Plane_CAS_01_F","x-coordinates":"753","y-coordinates":"951","fire_type":"2"
+"response":"Observer, Pilot triple six. CAS mission in action. Keep your heads down and remain vigilant, over.","class_name":"B_Plane_CAS_01_F","x-coordinates":"753","y-coordinates":"951","fire_type":"2"
 
 USER: I need a helicopter to drop a bomb at 753951
 "response":"Observer, Pilot Six. It is not possible to drop a bomb using a helicopter","class_name":"","x-coordinates":"753","y-coordinates":"951","fire_type":""
+
+USER: I need a drop do a gun run at 753951
+"response":"Observer, FAK. It is not possible to drop a bomb using the drone","class_name":"","x-coordinates":"753","y-coordinates":"951","fire_type":""
 
 """
 instructions = originalInstructions
@@ -209,7 +216,8 @@ def text_to_speech():
         "model": "tts-1",
         "input": content,
         "voice": "onyx",
-        "response_format": "wav"
+        "response_format": "wav",
+        "speed": "0.85"
     }
     
 
