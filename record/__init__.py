@@ -2,19 +2,29 @@ from .threading_utils import call_slow_function, has_call_finished, get_call_val
 # from .recorder import start_recording, stop_recording
 from .recorder import Recorder
 
+import logging
+import sys
+import os
+
+current_file_dir = os.path.dirname(__file__)
+parent_dir = os.path.dirname(current_file_dir)
+vendor_dir = os.path.join(parent_dir, 'vendor')
+sys.path.insert(0, vendor_dir)
+logger = logging.getLogger(__name__)
+logger.info('sys.path: %s', sys.path)
+
+
 from scipy.io.wavfile import write
 import sounddevice as sd
 import datetime
 import requests
-import logging
 import pygame
 import json
 import ast
-import os
 
 # This creates a logger with the name of the package you've imported
 # which should be `logging_example`, in case of this file
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 rec = Recorder(timeout=120)  # Setting a different timeout just as an example
 openAIApiKey = "";
 originalInstructions = """Instructions:
